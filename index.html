@@ -257,12 +257,50 @@
             right: 20px;
         }
         
-        /* Zoom controls */
-        .zoom-controls {
+        /* Top controls */
+        .top-controls {
             position: absolute;
             top: 20px;
             right: 20px;
             display: flex;
+            gap: 10px;
+            z-index: 1001;
+        }
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .download-btn {
+            background: rgba(76, 175, 80, 0.7);
+        }
+        
+        .download-btn:hover {
+            background: rgba(76, 175, 80, 0.9);
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
             gap: 10px;
             z-index: 1001;
         }
@@ -331,6 +369,27 @@
             100% { opacity: 0; }
         }
         
+        /* Download indicator */
+        .download-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1002;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .download-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         @media (max-width: 768px) {
             .gallery {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -360,12 +419,17 @@
                 right: 10px;
             }
             
-            .zoom-controls {
+            .top-controls {
                 top: 10px;
                 right: 10px;
             }
             
-            .zoom-btn {
+            .zoom-controls {
+                top: 60px;
+                right: 10px;
+            }
+            
+            .control-btn, .zoom-btn {
                 width: 35px;
                 height: 35px;
                 font-size: 18px;
@@ -379,6 +443,13 @@
             
             .zoom-info {
                 margin-left: 0;
+            }
+            
+            .download-indicator {
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                padding: 8px 15px;
             }
         }
         
@@ -395,11 +466,18 @@
                 max-width: 95%;
             }
             
-            .zoom-controls {
+            .top-controls {
                 flex-direction: column;
                 top: 50%;
                 right: 10px;
                 transform: translateY(-50%);
+            }
+            
+            .zoom-controls {
+                flex-direction: column;
+                top: auto;
+                bottom: 100px;
+                right: 10px;
             }
         }
     </style>
@@ -450,6 +528,17 @@
         <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#10094;</button>
         <button class="lightbox-nav lightbox-next" id="lightbox-next">&#10095;</button>
         
+        <!-- Top controls -->
+        <div class="top-controls">
+            <button class="control-btn download-btn" id="download-btn" title="Download Image (D)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+        </div>
+        
         <!-- Zoom controls -->
         <div class="zoom-controls">
             <button class="zoom-btn" id="zoom-in" title="Zoom In (Ctrl+滚轮上)">+</button>
@@ -465,6 +554,11 @@
                 <span class="zoom-info" id="zoom-info">100%</span>
             </div>
         </div>
+    </div>
+
+    <!-- Download indicator -->
+    <div class="download-indicator" id="download-indicator">
+        Downloading...
     </div>
 
     <script>
@@ -517,6 +611,8 @@
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
         const resetZoomBtn = document.getElementById('reset-zoom');
+        const downloadBtn = document.getElementById('download-btn');
+        const downloadIndicator = document.getElementById('download-indicator');
 
         // Function to format file size
         function formatFileSize(bytes) {
@@ -658,6 +754,35 @@
             updateLightbox();
         }
 
+        // Function to download current image
+        function downloadCurrentImage() {
+            const image = images[currentImageIndex];
+            const imageUrl = image.name;
+            const fileName = image.name;
+            
+            // Show download indicator
+            downloadIndicator.textContent = `Downloading ${fileName}...`;
+            downloadIndicator.classList.add('show');
+            
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Update indicator to show success
+            setTimeout(() => {
+                downloadIndicator.textContent = `Downloaded: ${fileName}`;
+                setTimeout(() => {
+                    downloadIndicator.classList.remove('show');
+                }, 1500);
+            }, 500);
+        }
+
         // Function to handle mouse wheel with Ctrl key
         function handleWheelZoom(event) {
             if (event.ctrlKey) {
@@ -677,6 +802,22 @@
                 zoomHintElement.hintTimeout = setTimeout(() => {
                     zoomHintElement.style.opacity = '0';
                 }, 2000);
+            }
+        }
+
+        // Function to handle mouse wheel without Ctrl key (image navigation)
+        function handleWheelNavigation(event) {
+            if (!event.ctrlKey) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Navigate to previous image when scrolling up
+                // Navigate to next image when scrolling down
+                if (event.deltaY < 0) {
+                    prevImage();
+                } else {
+                    nextImage();
+                }
             }
         }
 
@@ -710,6 +851,9 @@
             zoomOutBtn.addEventListener('click', zoomOut);
             resetZoomBtn.addEventListener('click', resetZoom);
             
+            // Download button
+            downloadBtn.addEventListener('click', downloadCurrentImage);
+            
             // Close lightbox when clicking outside the image
             lightbox.addEventListener('click', (e) => {
                 if (e.target === lightbox) {
@@ -724,9 +868,11 @@
             
             // Mouse wheel zoom for the entire lightbox
             lightbox.addEventListener('wheel', handleWheelZoom, { passive: false });
+            lightbox.addEventListener('wheel', handleWheelNavigation, { passive: false });
             
             // Also allow zooming when mouse is over the image
             lightboxImg.addEventListener('wheel', handleWheelZoom, { passive: false });
+            lightboxImg.addEventListener('wheel', handleWheelNavigation, { passive: false });
             
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
@@ -760,6 +906,13 @@
                     case '_':
                         if (e.ctrlKey || e.metaKey) {
                             zoomOut();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'd':
+                    case 'D':
+                        if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+                            downloadCurrentImage();
                             e.preventDefault();
                         }
                         break;
