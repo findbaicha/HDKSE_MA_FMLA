@@ -153,14 +153,12 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-color: rgba(0, 0, 0, 0.9);
             z-index: 1000;
-            justify-content: center;
-            align-items: center;
             animation: fadeIn 0.3s ease;
-            overflow: hidden;
+            overflow: auto;
         }
         
         .lightbox.active {
@@ -168,10 +166,13 @@
         }
         
         .lightbox-container {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             position: relative;
             overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .lightbox-content {
@@ -179,12 +180,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-width: 100%;
-            min-height: 100%;
+            min-width: auto;
+            min-height: auto;
             padding: 20px;
         }
         
         .lightbox-img {
+            width: auto;
+            height: auto;
             max-width: none;
             max-height: none;
             object-fit: contain;
@@ -209,7 +212,7 @@
             justify-content: space-between;
             align-items: center;
             min-width: 300px;
-            max-width: 80%;
+            max-width: 90%;
             z-index: 1002;
         }
         
@@ -467,6 +470,26 @@
         .fit-btn:hover {
             background: rgba(33, 150, 243, 0.9);
         }
+
+        // 在 updateLightbox() 函数的 img.onload 回调中添加：
+        img.onload = () => {
+            lightboxImg.src = image.name;
+            filenameElement.textContent = `${image.name} (${formatFileSize(image.size)})`;
+            
+            // 等待图片完全加载后更新
+            setTimeout(() => {
+                lightbox.classList.remove('loading');
+                updateZoomDisplay();
+                
+                // 更新光标
+                updateCursor();
+                
+                // 应用适应屏幕如果需要
+                if (isFitToScreen) {
+                    fitToScreen();
+                }
+            }, 100);
+        };
         
         @media (max-width: 768px) {
             .gallery {
