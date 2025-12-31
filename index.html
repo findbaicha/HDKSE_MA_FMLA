@@ -153,25 +153,27 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-color: rgba(0, 0, 0, 0.9);
             z-index: 1000;
-            justify-content: center;
-            align-items: center;
             animation: fadeIn 0.3s ease;
-            overflow: hidden;
+            overflow: auto;
         }
         
         .lightbox.active {
-            display: flex;
+            display: block;
         }
         
         .lightbox-container {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             position: relative;
             overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 80px 20px 100px;
         }
         
         .lightbox-content {
@@ -179,12 +181,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-width: 100%;
-            min-height: 100%;
-            padding: 20px;
+            min-width: auto;
+            min-height: auto;
+            max-width: 100%;
         }
         
         .lightbox-img {
+            width: auto;
+            height: auto;
             max-width: none;
             max-height: none;
             object-fit: contain;
@@ -209,7 +213,7 @@
             justify-content: space-between;
             align-items: center;
             min-width: 300px;
-            max-width: 80%;
+            max-width: 90%;
             z-index: 1002;
         }
         
@@ -348,6 +352,15 @@
             font-size: 16px;
         }
         
+        /* Fit to screen button */
+        .fit-btn {
+            background: rgba(33, 150, 243, 0.7);
+        }
+        
+        .fit-btn:hover {
+            background: rgba(33, 150, 243, 0.9);
+        }
+        
         /* Scrollbar styling for lightbox container */
         .lightbox-container::-webkit-scrollbar {
             width: 8px;
@@ -392,7 +405,7 @@
         /* Hint for zoom */
         .zoom-hint {
             position: fixed;
-            bottom: 100px;
+            bottom: 80px;
             left: 0;
             right: 0;
             text-align: center;
@@ -457,15 +470,6 @@
         
         .nav-mode-indicator.show {
             opacity: 1;
-        }
-        
-        /* Fit to screen button */
-        .fit-btn {
-            background: rgba(33, 150, 243, 0.7);
-        }
-        
-        .fit-btn:hover {
-            background: rgba(33, 150, 243, 0.9);
         }
         
         @media (max-width: 768px) {
@@ -538,8 +542,13 @@
                 padding: 6px 12px;
             }
             
-            .lightbox-content {
-                padding: 10px;
+            .lightbox-container {
+                padding: 70px 10px 90px;
+            }
+            
+            .zoom-hint {
+                bottom: 70px;
+                font-size: 0.75em;
             }
         }
         
@@ -569,6 +578,10 @@
             .lightbox-caption {
                 min-width: 200px;
                 font-size: 0.9em;
+            }
+            
+            .lightbox-container {
+                padding: 60px 5px 80px;
             }
         }
     </style>
@@ -788,12 +801,6 @@
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
             
-            // Center the scroll position
-            setTimeout(() => {
-                lightboxContainer.scrollTop = (lightboxContent.offsetHeight - lightboxContainer.clientHeight) / 2;
-                lightboxContainer.scrollLeft = (lightboxContent.offsetWidth - lightboxContainer.clientWidth) / 2;
-            }, 100);
-            
             // Show zoom hint
             zoomHintElement.style.opacity = '1';
             setTimeout(() => {
@@ -821,16 +828,33 @@
             img.onload = () => {
                 lightboxImg.src = image.name;
                 filenameElement.textContent = `${image.name} (${formatFileSize(image.size)})`;
-                lightbox.classList.remove('loading');
-                updateZoomDisplay();
                 
-                // Update cursor based on zoom level
-                updateCursor();
-                
-                // Apply fit to screen if needed
-                if (isFitToScreen) {
-                    fitToScreen();
-                }
+                // Wait for image to fully load
+                setTimeout(() => {
+                    lightbox.classList.remove('loading');
+                    updateZoomDisplay();
+                    
+                    // Update cursor based on zoom level
+                    updateCursor();
+                    
+                    // Apply fit to screen if needed
+                    if (isFitToScreen) {
+                        fitToScreen();
+                    }
+                    
+                    // Center the scroll position
+                    setTimeout(() => {
+                        if (currentScale <= 1) {
+                            const imgWidth = lightboxImg.offsetWidth * currentScale;
+                            const imgHeight = lightboxImg.offsetHeight * currentScale;
+                            const containerWidth = lightboxContainer.clientWidth;
+                            const containerHeight = lightboxContainer.clientHeight;
+                            
+                            lightboxContainer.scrollLeft = (imgWidth - containerWidth) / 2;
+                            lightboxContainer.scrollTop = (imgHeight - containerHeight) / 2;
+                        }
+                    }, 50);
+                }, 100);
             };
             img.onerror = () => {
                 lightboxImg.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
@@ -862,8 +886,8 @@
 
         // Function to fit image to screen
         function fitToScreen() {
-            const containerWidth = lightboxContainer.clientWidth - 40; // Account for padding
-            const containerHeight = lightboxContainer.clientHeight - 40;
+            const containerWidth = lightboxContainer.clientWidth;
+            const containerHeight = lightboxContainer.clientHeight;
             const imgWidth = lightboxImg.naturalWidth;
             const imgHeight = lightboxImg.naturalHeight;
             
@@ -989,13 +1013,9 @@
 
         // Function to handle pure mouse wheel (scroll zoomed image)
         function handleWheelScroll(event) {
-            // Only handle pure wheel (no modifier keys) when zoomed in
-            if (!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && currentScale > 1) {
-                // Let the browser handle the scrolling naturally
-                // We just prevent default to avoid page scroll
-                event.preventDefault();
-                // The container will scroll naturally
-            }
+            // Let the browser handle the scrolling naturally
+            // We just prevent default to avoid page scroll
+            event.preventDefault();
         }
 
         // Function to show navigation hint
