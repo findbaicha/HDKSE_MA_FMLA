@@ -160,16 +160,23 @@
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.3s ease;
+            overflow: hidden;
         }
         
         .lightbox.active {
             display: flex;
         }
         
-        .lightbox-content {
+        .lightbox-container {
             max-width: 90%;
             max-height: 90%;
             position: relative;
+            overflow: auto;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            display: inline-block;
         }
         
         .lightbox-img {
@@ -179,12 +186,13 @@
             border-radius: 5px;
             box-shadow: 0 5px 25px rgba(0,0,0,0.5);
             transition: transform 0.1s ease;
-            transform-origin: center center;
+            transform-origin: 0 0;
+            display: block;
         }
         
         .lightbox-caption {
-            position: absolute;
-            bottom: -50px;
+            position: fixed;
+            bottom: 20px;
             left: 0;
             right: 0;
             text-align: center;
@@ -195,6 +203,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin: 0 5%;
+            z-index: 1002;
         }
         
         .zoom-info {
@@ -207,9 +217,9 @@
         }
         
         .lightbox-close {
-            position: absolute;
-            top: -40px;
-            right: -40px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
             color: white;
             font-size: 30px;
             background: none;
@@ -221,6 +231,7 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.3s ease;
+            z-index: 1002;
         }
         
         .lightbox-close:hover {
@@ -228,7 +239,7 @@
         }
         
         .lightbox-nav {
-            position: absolute;
+            position: fixed;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.1);
@@ -243,6 +254,7 @@
             align-items: center;
             justify-content: center;
             transition: background 0.3s ease;
+            z-index: 1002;
         }
         
         .lightbox-nav:hover {
@@ -259,12 +271,12 @@
         
         /* Top controls */
         .top-controls {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            right: 20px;
+            right: 70px;
             display: flex;
             gap: 10px;
-            z-index: 1001;
+            z-index: 1002;
         }
         
         .control-btn {
@@ -296,13 +308,13 @@
         }
         
         .zoom-controls {
-            position: absolute;
+            position: fixed;
             top: 70px;
             right: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            z-index: 1001;
+            z-index: 1002;
         }
         
         .zoom-btn {
@@ -330,6 +342,26 @@
             font-size: 16px;
         }
         
+        /* Scrollbar styling for lightbox container */
+        .lightbox-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .lightbox-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .lightbox-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        .lightbox-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -352,7 +384,7 @@
         
         /* Hint for zoom */
         .zoom-hint {
-            position: absolute;
+            position: fixed;
             bottom: 100px;
             left: 0;
             right: 0;
@@ -361,6 +393,16 @@
             font-size: 0.8em;
             padding: 10px;
             animation: fadeOutHint 3s forwards;
+            z-index: 1002;
+        }
+        
+        /* Drag cursor when zoomed */
+        .lightbox-container.grabbable {
+            cursor: grab;
+        }
+        
+        .lightbox-container.grabbable:active {
+            cursor: grabbing;
         }
         
         @keyframes fadeOutHint {
@@ -378,7 +420,7 @@
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
-            z-index: 1002;
+            z-index: 1003;
             opacity: 0;
             transform: translateY(-20px);
             transition: all 0.3s ease;
@@ -388,6 +430,26 @@
         .download-indicator.show {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        /* Navigation mode indicator */
+        .nav-mode-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-mode-indicator.show {
+            opacity: 1;
         }
         
         @media (max-width: 768px) {
@@ -421,7 +483,7 @@
             
             .top-controls {
                 top: 10px;
-                right: 10px;
+                right: 60px;
             }
             
             .zoom-controls {
@@ -438,7 +500,9 @@
             .lightbox-caption {
                 flex-direction: column;
                 gap: 5px;
-                bottom: -60px;
+                bottom: 10px;
+                margin: 0 10px;
+                padding: 8px;
             }
             
             .zoom-info {
@@ -451,6 +515,12 @@
                 font-size: 14px;
                 padding: 8px 15px;
             }
+            
+            .nav-mode-indicator {
+                top: 60px;
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -462,8 +532,9 @@
                 padding: 10px;
             }
             
-            .lightbox-content {
+            .lightbox-container {
                 max-width: 95%;
+                max-height: 85%;
             }
             
             .top-controls {
@@ -546,13 +617,21 @@
             <button class="zoom-btn" id="zoom-out" title="Zoom Out (Ctrl+滚轮下)">−</button>
         </div>
         
-        <div class="lightbox-content" id="lightbox-content">
-            <img class="lightbox-img" id="lightbox-img" src="" alt="">
-            <div class="zoom-hint" id="zoom-hint">Use Ctrl + Mouse Wheel to zoom</div>
-            <div class="lightbox-caption" id="lightbox-caption">
-                <span id="filename"></span>
-                <span class="zoom-info" id="zoom-info">100%</span>
+        <!-- Navigation mode indicator -->
+        <div class="nav-mode-indicator" id="nav-mode-indicator">
+            Press <kbd>Shift</kbd> + Wheel to navigate between images
+        </div>
+        
+        <div class="lightbox-container" id="lightbox-container">
+            <div class="lightbox-content">
+                <img class="lightbox-img" id="lightbox-img" src="" alt="">
             </div>
+        </div>
+        
+        <div class="zoom-hint" id="zoom-hint">Use Ctrl + Mouse Wheel to zoom | Drag to pan when zoomed</div>
+        <div class="lightbox-caption" id="lightbox-caption">
+            <span id="filename"></span>
+            <span class="zoom-info" id="zoom-info">100%</span>
         </div>
     </div>
 
@@ -600,11 +679,13 @@
         
         // DOM elements
         const lightbox = document.getElementById('lightbox');
+        const lightboxContainer = document.getElementById('lightbox-container');
         const lightboxImg = document.getElementById('lightbox-img');
-        const lightboxContent = document.getElementById('lightbox-content');
+        const lightboxContent = lightboxImg.parentElement;
         const filenameElement = document.getElementById('filename');
         const zoomInfoElement = document.getElementById('zoom-info');
         const zoomHintElement = document.getElementById('zoom-hint');
+        const navModeIndicator = document.getElementById('nav-mode-indicator');
         const lightboxClose = document.getElementById('lightbox-close');
         const lightboxPrev = document.getElementById('lightbox-prev');
         const lightboxNext = document.getElementById('lightbox-next');
@@ -678,11 +759,17 @@
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
             
+            // Center the scroll position
+            setTimeout(() => {
+                lightboxContainer.scrollTop = (lightboxContent.offsetHeight - lightboxContainer.clientHeight) / 2;
+                lightboxContainer.scrollLeft = (lightboxContent.offsetWidth - lightboxContainer.clientWidth) / 2;
+            }, 50);
+            
             // Show zoom hint
             zoomHintElement.style.opacity = '1';
             setTimeout(() => {
                 zoomHintElement.style.opacity = '0';
-            }, 3000);
+            }, 5000);
         }
 
         // Function to close lightbox
@@ -706,12 +793,16 @@
                 filenameElement.textContent = `${image.name} (${formatFileSize(image.size)})`;
                 lightbox.classList.remove('loading');
                 updateZoomDisplay();
+                
+                // Update cursor based on zoom level
+                updateCursor();
             };
             img.onerror = () => {
                 lightboxImg.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
                 filenameElement.textContent = `${image.name} - Image not found`;
                 lightbox.classList.remove('loading');
                 updateZoomDisplay();
+                updateCursor();
             };
             img.src = image.name;
         }
@@ -720,6 +811,26 @@
         function updateZoomDisplay() {
             lightboxImg.style.transform = `scale(${currentScale})`;
             zoomInfoElement.textContent = `${Math.round(currentScale * 100)}%`;
+            
+            // Update cursor based on zoom level
+            updateCursor();
+            
+            // Center view if zoomed out
+            if (currentScale <= 1) {
+                setTimeout(() => {
+                    lightboxContainer.scrollTop = (lightboxContent.offsetHeight - lightboxContainer.clientHeight) / 2;
+                    lightboxContainer.scrollLeft = (lightboxContent.offsetWidth - lightboxContainer.clientWidth) / 2;
+                }, 10);
+            }
+        }
+
+        // Function to update cursor based on zoom level
+        function updateCursor() {
+            if (currentScale > 1) {
+                lightboxContainer.classList.add('grabbable');
+            } else {
+                lightboxContainer.classList.remove('grabbable');
+            }
         }
 
         // Function to zoom in
@@ -783,7 +894,7 @@
             }, 500);
         }
 
-        // Function to handle mouse wheel with Ctrl key
+        // Function to handle mouse wheel with Ctrl key (zoom)
         function handleWheelZoom(event) {
             if (event.ctrlKey) {
                 event.preventDefault();
@@ -805,9 +916,9 @@
             }
         }
 
-        // Function to handle mouse wheel without Ctrl key (image navigation)
+        // Function to handle mouse wheel with Shift key (image navigation)
         function handleWheelNavigation(event) {
-            if (!event.ctrlKey) {
+            if (event.shiftKey) {
                 event.preventDefault();
                 event.stopPropagation();
                 
@@ -818,7 +929,34 @@
                 } else {
                     nextImage();
                 }
+                
+                // Show navigation mode indicator
+                navModeIndicator.classList.add('show');
+                clearTimeout(navModeIndicator.navTimeout);
+                navModeIndicator.navTimeout = setTimeout(() => {
+                    navModeIndicator.classList.remove('show');
+                }, 1500);
             }
+        }
+
+        // Function to handle pure mouse wheel (scroll zoomed image)
+        function handleWheelScroll(event) {
+            // Only handle pure wheel (no modifier keys) when zoomed in
+            if (!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && currentScale > 1) {
+                // Let the browser handle the scrolling naturally
+                // We just prevent default to avoid page scroll
+                event.preventDefault();
+                // The container will scroll naturally
+            }
+        }
+
+        // Function to show navigation hint
+        function showNavigationHint() {
+            navModeIndicator.classList.add('show');
+            clearTimeout(navModeIndicator.navTimeout);
+            navModeIndicator.navTimeout = setTimeout(() => {
+                navModeIndicator.classList.remove('show');
+            }, 2000);
         }
 
         // Function to set current date
@@ -862,17 +1000,55 @@
             });
             
             // Prevent lightbox content click from closing
-            lightboxContent.addEventListener('click', (e) => {
+            lightboxContainer.addEventListener('click', (e) => {
                 e.stopPropagation();
             });
             
-            // Mouse wheel zoom for the entire lightbox
+            // Mouse wheel event listeners for different functions
             lightbox.addEventListener('wheel', handleWheelZoom, { passive: false });
             lightbox.addEventListener('wheel', handleWheelNavigation, { passive: false });
+            lightboxContainer.addEventListener('wheel', handleWheelScroll, { passive: false });
             
             // Also allow zooming when mouse is over the image
             lightboxImg.addEventListener('wheel', handleWheelZoom, { passive: false });
             lightboxImg.addEventListener('wheel', handleWheelNavigation, { passive: false });
+            
+            // Drag functionality for panning when zoomed
+            let isDragging = false;
+            let startX, startY;
+            let scrollLeft, scrollTop;
+            
+            lightboxContainer.addEventListener('mousedown', (e) => {
+                if (currentScale > 1 && e.button === 0) { // Left mouse button only when zoomed
+                    isDragging = true;
+                    startX = e.pageX - lightboxContainer.offsetLeft;
+                    startY = e.pageY - lightboxContainer.offsetTop;
+                    scrollLeft = lightboxContainer.scrollLeft;
+                    scrollTop = lightboxContainer.scrollTop;
+                    lightboxContainer.style.cursor = 'grabbing';
+                    e.preventDefault();
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - lightboxContainer.offsetLeft;
+                const y = e.pageY - lightboxContainer.offsetTop;
+                const walkX = (x - startX) * 2;
+                const walkY = (y - startY) * 2;
+                lightboxContainer.scrollLeft = scrollLeft - walkX;
+                lightboxContainer.scrollTop = scrollTop - walkY;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                if (currentScale > 1) {
+                    lightboxContainer.style.cursor = 'grab';
+                } else {
+                    lightboxContainer.style.cursor = 'default';
+                }
+            });
             
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
@@ -883,10 +1059,44 @@
                         closeLightbox();
                         break;
                     case 'ArrowLeft':
-                        prevImage();
+                        if (e.shiftKey) {
+                            // If shift is pressed, scroll horizontally
+                            lightboxContainer.scrollLeft -= 100;
+                            e.preventDefault();
+                        } else {
+                            prevImage();
+                        }
                         break;
                     case 'ArrowRight':
-                        nextImage();
+                        if (e.shiftKey) {
+                            // If shift is pressed, scroll horizontally
+                            lightboxContainer.scrollLeft += 100;
+                            e.preventDefault();
+                        } else {
+                            nextImage();
+                        }
+                        break;
+                    case 'ArrowUp':
+                        if (e.shiftKey) {
+                            // If shift is pressed, navigate to previous image
+                            prevImage();
+                            e.preventDefault();
+                        } else {
+                            // Scroll vertically
+                            lightboxContainer.scrollTop -= 100;
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'ArrowDown':
+                        if (e.shiftKey) {
+                            // If shift is pressed, navigate to next image
+                            nextImage();
+                            e.preventDefault();
+                        } else {
+                            // Scroll vertically
+                            lightboxContainer.scrollTop += 100;
+                            e.preventDefault();
+                        }
                         break;
                     case 'r':
                     case 'R':
@@ -916,6 +1126,10 @@
                             e.preventDefault();
                         }
                         break;
+                    case 'Shift':
+                        // Show navigation hint when Shift is pressed
+                        showNavigationHint();
+                        break;
                 }
                 
                 // Show zoom hint when using keyboard zoom
@@ -925,6 +1139,15 @@
                     zoomHintElement.hintTimeout = setTimeout(() => {
                         zoomHintElement.style.opacity = '0';
                     }, 2000);
+                }
+            });
+            
+            // Show navigation hint when Shift key is released
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'Shift') {
+                    setTimeout(() => {
+                        navModeIndicator.classList.remove('show');
+                    }, 1000);
                 }
             });
         });
