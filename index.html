@@ -160,42 +160,72 @@
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.3s ease;
+            overflow: hidden;
         }
         
         .lightbox.active {
             display: flex;
         }
         
-        .lightbox-content {
-            max-width: 90%;
-            max-height: 90%;
+        .lightbox-container {
+            width: 100%;
+            height: 100%;
             position: relative;
+            overflow: auto;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 100%;
+            min-height: 100%;
+            padding: 20px;
         }
         
         .lightbox-img {
-            max-width: 100%;
-            max-height: 90vh;
+            max-width: none;
+            max-height: none;
             object-fit: contain;
             border-radius: 5px;
             box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease;
+            transform-origin: center center;
+            display: block;
         }
         
         .lightbox-caption {
-            position: absolute;
-            bottom: -50px;
-            left: 0;
-            right: 0;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
             color: white;
-            padding: 10px;
+            padding: 10px 20px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-width: 300px;
+            max-width: 80%;
+            z-index: 1002;
+        }
+        
+        .zoom-info {
+            font-size: 0.9em;
+            color: #ddd;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
         }
         
         .lightbox-close {
-            position: absolute;
-            top: -40px;
-            right: -40px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
             color: white;
             font-size: 30px;
             background: none;
@@ -207,6 +237,7 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.3s ease;
+            z-index: 1002;
         }
         
         .lightbox-close:hover {
@@ -214,7 +245,7 @@
         }
         
         .lightbox-nav {
-            position: absolute;
+            position: fixed;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.1);
@@ -229,6 +260,7 @@
             align-items: center;
             justify-content: center;
             transition: background 0.3s ease;
+            z-index: 1002;
         }
         
         .lightbox-nav:hover {
@@ -243,6 +275,99 @@
             right: 20px;
         }
         
+        /* Top controls */
+        .top-controls {
+            position: fixed;
+            top: 20px;
+            right: 70px;
+            display: flex;
+            gap: 10px;
+            z-index: 1002;
+        }
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .download-btn {
+            background: rgba(76, 175, 80, 0.7);
+        }
+        
+        .download-btn:hover {
+            background: rgba(76, 175, 80, 0.9);
+        }
+        
+        .zoom-controls {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1002;
+        }
+        
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .reset-zoom {
+            background: rgba(255, 255, 255, 0.15);
+            font-size: 16px;
+        }
+        
+        /* Scrollbar styling for lightbox container */
+        .lightbox-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .lightbox-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .lightbox-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        .lightbox-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -251,16 +376,96 @@
         /* Loading indicator */
         .loading {
             display: none;
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
             font-size: 18px;
+            z-index: 1002;
         }
         
         .lightbox.loading .loading {
             display: block;
+        }
+        
+        /* Hint for zoom */
+        .zoom-hint {
+            position: fixed;
+            bottom: 100px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8em;
+            padding: 10px;
+            animation: fadeOutHint 3s forwards;
+            z-index: 1002;
+        }
+        
+        /* Drag cursor when zoomed */
+        .lightbox-container.grabbable {
+            cursor: grab;
+        }
+        
+        .lightbox-container.grabbable:active {
+            cursor: grabbing;
+        }
+        
+        @keyframes fadeOutHint {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        /* Download indicator */
+        .download-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1003;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .download-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Navigation mode indicator */
+        .nav-mode-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-mode-indicator.show {
+            opacity: 1;
+        }
+        
+        /* Fit to screen button */
+        .fit-btn {
+            background: rgba(33, 150, 243, 0.7);
+        }
+        
+        .fit-btn:hover {
+            background: rgba(33, 150, 243, 0.9);
         }
         
         @media (max-width: 768px) {
@@ -291,6 +496,51 @@
                 top: 10px;
                 right: 10px;
             }
+            
+            .top-controls {
+                top: 10px;
+                right: 60px;
+            }
+            
+            .zoom-controls {
+                top: 60px;
+                right: 10px;
+            }
+            
+            .control-btn, .zoom-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+            
+            .lightbox-caption {
+                flex-direction: column;
+                gap: 5px;
+                bottom: 10px;
+                min-width: 250px;
+                padding: 8px 15px;
+            }
+            
+            .zoom-info {
+                margin-left: 0;
+            }
+            
+            .download-indicator {
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            
+            .nav-mode-indicator {
+                top: 60px;
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
+            
+            .lightbox-content {
+                padding: 10px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -302,8 +552,23 @@
                 padding: 10px;
             }
             
-            .lightbox-content {
-                max-width: 95%;
+            .top-controls {
+                flex-direction: column;
+                top: 50%;
+                right: 10px;
+                transform: translateY(-50%);
+            }
+            
+            .zoom-controls {
+                flex-direction: column;
+                top: auto;
+                bottom: 100px;
+                right: 10px;
+            }
+            
+            .lightbox-caption {
+                min-width: 200px;
+                font-size: 0.9em;
             }
         }
     </style>
@@ -353,10 +618,53 @@
         <button class="lightbox-close" id="lightbox-close">&times;</button>
         <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#10094;</button>
         <button class="lightbox-nav lightbox-next" id="lightbox-next">&#10095;</button>
-        <div class="lightbox-content">
-            <img class="lightbox-img" id="lightbox-img" src="" alt="">
-            <div class="lightbox-caption" id="lightbox-caption"></div>
+        
+        <!-- Top controls -->
+        <div class="top-controls">
+            <button class="control-btn fit-btn" id="fit-btn" title="Fit to Screen (F)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                </svg>
+            </button>
+            <button class="control-btn download-btn" id="download-btn" title="Download Image (D)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
         </div>
+        
+        <!-- Zoom controls -->
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoom-in" title="Zoom In (Ctrl+滚轮上)">+</button>
+            <button class="zoom-btn reset-zoom" id="reset-zoom" title="Reset Zoom (R)">⟳</button>
+            <button class="zoom-btn" id="zoom-out" title="Zoom Out (Ctrl+滚轮下)">−</button>
+        </div>
+        
+        <!-- Navigation mode indicator -->
+        <div class="nav-mode-indicator" id="nav-mode-indicator">
+            Press <kbd>Shift</kbd> + Wheel to navigate between images
+        </div>
+        
+        <div class="lightbox-container" id="lightbox-container">
+            <div class="lightbox-content" id="lightbox-content">
+                <img class="lightbox-img" id="lightbox-img" src="" alt="">
+            </div>
+        </div>
+        
+        <div class="zoom-hint" id="zoom-hint">Use Ctrl + Mouse Wheel to zoom | Drag to pan when zoomed</div>
+        <div class="lightbox-caption" id="lightbox-caption">
+            <span id="filename"></span>
+            <span class="zoom-info" id="zoom-info">100%</span>
+        </div>
+    </div>
+
+    <!-- Download indicator -->
+    <div class="download-indicator" id="download-indicator">
+        Downloading...
     </div>
 
     <script>
@@ -391,12 +699,30 @@
 
         // Lightbox state
         let currentImageIndex = 0;
+        let currentScale = 1;
+        let isFitToScreen = false;
+        const minScale = 0.1;
+        const maxScale = 10;
+        const scaleStep = 0.1;
+        
+        // DOM elements
         const lightbox = document.getElementById('lightbox');
+        const lightboxContainer = document.getElementById('lightbox-container');
+        const lightboxContent = document.getElementById('lightbox-content');
         const lightboxImg = document.getElementById('lightbox-img');
-        const lightboxCaption = document.getElementById('lightbox-caption');
+        const filenameElement = document.getElementById('filename');
+        const zoomInfoElement = document.getElementById('zoom-info');
+        const zoomHintElement = document.getElementById('zoom-hint');
+        const navModeIndicator = document.getElementById('nav-mode-indicator');
         const lightboxClose = document.getElementById('lightbox-close');
         const lightboxPrev = document.getElementById('lightbox-prev');
         const lightboxNext = document.getElementById('lightbox-next');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const resetZoomBtn = document.getElementById('reset-zoom');
+        const fitBtn = document.getElementById('fit-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const downloadIndicator = document.getElementById('download-indicator');
 
         // Function to format file size
         function formatFileSize(bytes) {
@@ -457,15 +783,30 @@
         // Function to open lightbox
         function openLightbox(index) {
             currentImageIndex = index;
+            resetZoom(); // Reset zoom when opening new image
             updateLightbox();
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
+            
+            // Center the scroll position
+            setTimeout(() => {
+                lightboxContainer.scrollTop = (lightboxContent.offsetHeight - lightboxContainer.clientHeight) / 2;
+                lightboxContainer.scrollLeft = (lightboxContent.offsetWidth - lightboxContainer.clientWidth) / 2;
+            }, 100);
+            
+            // Show zoom hint
+            zoomHintElement.style.opacity = '1';
+            setTimeout(() => {
+                zoomHintElement.style.opacity = '0';
+            }, 5000);
         }
 
         // Function to close lightbox
         function closeLightbox() {
             lightbox.classList.remove('active');
             document.body.style.overflow = 'auto'; // Re-enable scrolling
+            resetZoom(); // Reset zoom when closing
+            isFitToScreen = false;
         }
 
         // Function to update lightbox content
@@ -479,27 +820,191 @@
             const img = new Image();
             img.onload = () => {
                 lightboxImg.src = image.name;
-                lightboxCaption.textContent = `${image.name} (${formatFileSize(image.size)})`;
+                filenameElement.textContent = `${image.name} (${formatFileSize(image.size)})`;
                 lightbox.classList.remove('loading');
+                updateZoomDisplay();
+                
+                // Update cursor based on zoom level
+                updateCursor();
+                
+                // Apply fit to screen if needed
+                if (isFitToScreen) {
+                    fitToScreen();
+                }
             };
             img.onerror = () => {
                 lightboxImg.src = 'https://via.placeholder.com/800x600?text=Image+Not+Found';
-                lightboxCaption.textContent = `${image.name} - Image not found`;
+                filenameElement.textContent = `${image.name} - Image not found`;
                 lightbox.classList.remove('loading');
+                updateZoomDisplay();
+                updateCursor();
             };
             img.src = image.name;
+        }
+
+        // Function to update zoom display
+        function updateZoomDisplay() {
+            lightboxImg.style.transform = `scale(${currentScale})`;
+            zoomInfoElement.textContent = `${Math.round(currentScale * 100)}%`;
+            
+            // Update cursor based on zoom level
+            updateCursor();
+        }
+
+        // Function to update cursor based on zoom level
+        function updateCursor() {
+            if (currentScale > 1) {
+                lightboxContainer.classList.add('grabbable');
+            } else {
+                lightboxContainer.classList.remove('grabbable');
+            }
+        }
+
+        // Function to fit image to screen
+        function fitToScreen() {
+            const containerWidth = lightboxContainer.clientWidth - 40; // Account for padding
+            const containerHeight = lightboxContainer.clientHeight - 40;
+            const imgWidth = lightboxImg.naturalWidth;
+            const imgHeight = lightboxImg.naturalHeight;
+            
+            // Calculate scale to fit within container
+            const widthRatio = containerWidth / imgWidth;
+            const heightRatio = containerHeight / imgHeight;
+            currentScale = Math.min(widthRatio, heightRatio);
+            
+            isFitToScreen = true;
+            updateZoomDisplay();
+        }
+
+        // Function to zoom in
+        function zoomIn() {
+            isFitToScreen = false;
+            currentScale = Math.min(currentScale + scaleStep, maxScale);
+            updateZoomDisplay();
+        }
+
+        // Function to zoom out
+        function zoomOut() {
+            isFitToScreen = false;
+            currentScale = Math.max(currentScale - scaleStep, minScale);
+            updateZoomDisplay();
+        }
+
+        // Function to reset zoom
+        function resetZoom() {
+            isFitToScreen = false;
+            currentScale = 1;
+            updateZoomDisplay();
         }
 
         // Function to navigate to previous image
         function prevImage() {
             currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            resetZoom(); // Reset zoom when changing image
+            isFitToScreen = false;
             updateLightbox();
         }
 
         // Function to navigate to next image
         function nextImage() {
             currentImageIndex = (currentImageIndex + 1) % images.length;
+            resetZoom(); // Reset zoom when changing image
+            isFitToScreen = false;
             updateLightbox();
+        }
+
+        // Function to download current image
+        function downloadCurrentImage() {
+            const image = images[currentImageIndex];
+            const imageUrl = image.name;
+            const fileName = image.name;
+            
+            // Show download indicator
+            downloadIndicator.textContent = `Downloading ${fileName}...`;
+            downloadIndicator.classList.add('show');
+            
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Update indicator to show success
+            setTimeout(() => {
+                downloadIndicator.textContent = `Downloaded: ${fileName}`;
+                setTimeout(() => {
+                    downloadIndicator.classList.remove('show');
+                }, 1500);
+            }, 500);
+        }
+
+        // Function to handle mouse wheel with Ctrl key (zoom)
+        function handleWheelZoom(event) {
+            if (event.ctrlKey) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Zoom in when scrolling up, zoom out when scrolling down
+                if (event.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+                
+                // Show zoom hint again when using zoom
+                zoomHintElement.style.opacity = '1';
+                clearTimeout(zoomHintElement.hintTimeout);
+                zoomHintElement.hintTimeout = setTimeout(() => {
+                    zoomHintElement.style.opacity = '0';
+                }, 2000);
+            }
+        }
+
+        // Function to handle mouse wheel with Shift key (image navigation)
+        function handleWheelNavigation(event) {
+            if (event.shiftKey) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Navigate to previous image when scrolling up
+                // Navigate to next image when scrolling down
+                if (event.deltaY < 0) {
+                    prevImage();
+                } else {
+                    nextImage();
+                }
+                
+                // Show navigation mode indicator
+                navModeIndicator.classList.add('show');
+                clearTimeout(navModeIndicator.navTimeout);
+                navModeIndicator.navTimeout = setTimeout(() => {
+                    navModeIndicator.classList.remove('show');
+                }, 1500);
+            }
+        }
+
+        // Function to handle pure mouse wheel (scroll zoomed image)
+        function handleWheelScroll(event) {
+            // Only handle pure wheel (no modifier keys) when zoomed in
+            if (!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && currentScale > 1) {
+                // Let the browser handle the scrolling naturally
+                // We just prevent default to avoid page scroll
+                event.preventDefault();
+                // The container will scroll naturally
+            }
+        }
+
+        // Function to show navigation hint
+        function showNavigationHint() {
+            navModeIndicator.classList.add('show');
+            clearTimeout(navModeIndicator.navTimeout);
+            navModeIndicator.navTimeout = setTimeout(() => {
+                navModeIndicator.classList.remove('show');
+            }, 2000);
         }
 
         // Function to set current date
@@ -527,10 +1032,72 @@
             lightboxPrev.addEventListener('click', prevImage);
             lightboxNext.addEventListener('click', nextImage);
             
+            // Zoom controls
+            zoomInBtn.addEventListener('click', zoomIn);
+            zoomOutBtn.addEventListener('click', zoomOut);
+            resetZoomBtn.addEventListener('click', resetZoom);
+            
+            // Fit to screen button
+            fitBtn.addEventListener('click', fitToScreen);
+            
+            // Download button
+            downloadBtn.addEventListener('click', downloadCurrentImage);
+            
             // Close lightbox when clicking outside the image
             lightbox.addEventListener('click', (e) => {
                 if (e.target === lightbox) {
                     closeLightbox();
+                }
+            });
+            
+            // Prevent lightbox content click from closing
+            lightboxContainer.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            // Mouse wheel event listeners for different functions
+            lightbox.addEventListener('wheel', handleWheelZoom, { passive: false });
+            lightbox.addEventListener('wheel', handleWheelNavigation, { passive: false });
+            lightboxContainer.addEventListener('wheel', handleWheelScroll, { passive: false });
+            
+            // Also allow zooming when mouse is over the image
+            lightboxImg.addEventListener('wheel', handleWheelZoom, { passive: false });
+            lightboxImg.addEventListener('wheel', handleWheelNavigation, { passive: false });
+            
+            // Drag functionality for panning when zoomed
+            let isDragging = false;
+            let startX, startY;
+            let scrollLeft, scrollTop;
+            
+            lightboxContainer.addEventListener('mousedown', (e) => {
+                if (currentScale > 1 && e.button === 0) { // Left mouse button only when zoomed
+                    isDragging = true;
+                    startX = e.pageX - lightboxContainer.offsetLeft;
+                    startY = e.pageY - lightboxContainer.offsetTop;
+                    scrollLeft = lightboxContainer.scrollLeft;
+                    scrollTop = lightboxContainer.scrollTop;
+                    lightboxContainer.style.cursor = 'grabbing';
+                    e.preventDefault();
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - lightboxContainer.offsetLeft;
+                const y = e.pageY - lightboxContainer.offsetTop;
+                const walkX = (x - startX) * 2;
+                const walkY = (y - startY) * 2;
+                lightboxContainer.scrollLeft = scrollLeft - walkX;
+                lightboxContainer.scrollTop = scrollTop - walkY;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                if (currentScale > 1) {
+                    lightboxContainer.style.cursor = 'grab';
+                } else {
+                    lightboxContainer.style.cursor = 'default';
                 }
             });
             
@@ -543,11 +1110,102 @@
                         closeLightbox();
                         break;
                     case 'ArrowLeft':
-                        prevImage();
+                        if (e.shiftKey) {
+                            // If shift is pressed, scroll horizontally
+                            lightboxContainer.scrollLeft -= 100;
+                            e.preventDefault();
+                        } else {
+                            prevImage();
+                        }
                         break;
                     case 'ArrowRight':
-                        nextImage();
+                        if (e.shiftKey) {
+                            // If shift is pressed, scroll horizontally
+                            lightboxContainer.scrollLeft += 100;
+                            e.preventDefault();
+                        } else {
+                            nextImage();
+                        }
                         break;
+                    case 'ArrowUp':
+                        if (e.shiftKey) {
+                            // If shift is pressed, navigate to previous image
+                            prevImage();
+                            e.preventDefault();
+                        } else {
+                            // Scroll vertically
+                            lightboxContainer.scrollTop -= 100;
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'ArrowDown':
+                        if (e.shiftKey) {
+                            // If shift is pressed, navigate to next image
+                            nextImage();
+                            e.preventDefault();
+                        } else {
+                            // Scroll vertically
+                            lightboxContainer.scrollTop += 100;
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'r':
+                    case 'R':
+                        if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+                            resetZoom();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'f':
+                    case 'F':
+                        if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+                            fitToScreen();
+                            e.preventDefault();
+                        }
+                        break;
+                    case '+':
+                    case '=':
+                        if (e.ctrlKey || e.metaKey) {
+                            zoomIn();
+                            e.preventDefault();
+                        }
+                        break;
+                    case '-':
+                    case '_':
+                        if (e.ctrlKey || e.metaKey) {
+                            zoomOut();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'd':
+                    case 'D':
+                        if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+                            downloadCurrentImage();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'Shift':
+                        // Show navigation hint when Shift is pressed
+                        showNavigationHint();
+                        break;
+                }
+                
+                // Show zoom hint when using keyboard zoom
+                if (e.key === '+' || e.key === '=' || e.key === '-' || e.key === '_' || e.key === 'r' || e.key === 'R' || e.key === 'f' || e.key === 'F') {
+                    zoomHintElement.style.opacity = '1';
+                    clearTimeout(zoomHintElement.hintTimeout);
+                    zoomHintElement.hintTimeout = setTimeout(() => {
+                        zoomHintElement.style.opacity = '0';
+                    }, 2000);
+                }
+            });
+            
+            // Show navigation hint when Shift key is released
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'Shift') {
+                    setTimeout(() => {
+                        navModeIndicator.classList.remove('show');
+                    }, 1000);
                 }
             });
         });
